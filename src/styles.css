@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@400;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+  background: #07090f;
+}
+
+.input {
+  @apply rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100 disabled:bg-slate-100;
+}
+
+.hero-grid {
+  background:
+    linear-gradient(115deg, rgba(255, 70, 85, 0.2), transparent 34%),
+    linear-gradient(245deg, rgba(124, 58, 237, 0.32), transparent 35%),
+    radial-gradient(circle at 72% 8%, rgba(250, 204, 21, 0.2), transparent 18%),
+    radial-gradient(circle at 40% 18%, rgba(34, 211, 238, 0.18), transparent 24%),
+    #07090f;
+}
+
+.hero-grid::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+.panel-card {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(17, 24, 39, 0.94)),
+    #020617;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+.fort-card {
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(88, 28, 135, 0.72), rgba(2, 6, 23, 0.92)),
+    #020617;
+  box-shadow:
+    0 26px 80px rgba(0, 0, 0, 0.42),
+    0 0 36px rgba(250, 204, 21, 0.13);
+}
+
+.stats-band {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.18);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stats-band > div {
+  background:
+    radial-gradient(circle at top left, rgba(250, 204, 21, 0.11), transparent 38%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.98));
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .stats-band {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .stats-band > div {
+    padding: 1.25rem;
+  }
+}
+
+.prize-card {
+  overflow: hidden;
+  border: 1px solid rgba(250, 204, 21, 0.16);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(2, 6, 23, 0.98)),
+    #020617;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fca5a5;
+}
