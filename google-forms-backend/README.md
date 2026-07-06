@@ -107,6 +107,27 @@ Puedes publicar Apps Script como Web App y usar `doGet()` para consultar:
 
 Luego en React reemplazas `/api/progreso` por la URL publicada de Apps Script.
 
+Tambien puedes consultar los numeros de una compra con el WhatsApp usado en el formulario:
+
+```txt
+https://script.google.com/macros/s/TU_DEPLOYMENT_ID/exec?whatsapp=0999999999
+```
+
+Respuesta:
+
+```json
+{
+  "compras": [
+    {
+      "fecha": "2026-07-06T12:00:00.000Z",
+      "cantidad_boletos": 2,
+      "estado": "pendiente",
+      "numeros_boletos": ["12", "13"]
+    }
+  ]
+}
+```
+
 ## Recomendacion practica
 
 Para evitar problemas con subida de archivo desde React hacia Google Forms, deja el formulario como link externo:

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ChevronRight, ExternalLink, Gift, HeartPulse, Medal, Music, ShieldCheck, Trophy } from 'lucide-react';
+import { ChevronRight, ExternalLink, Gift, HeartPulse, Loader2, Medal, Music, Search, ShieldCheck, TicketCheck, Trophy } from 'lucide-react';
 import { paymentConfig, prizes, storyGallery } from './siteConfig';
 import './styles.css';
 
@@ -171,6 +171,120 @@ function GoogleFormPurchaseCard({ vendidos }) {
   );
 }
 
+function TicketLookupCard() {
+  const [whatsapp, setWhatsapp] = React.useState('');
+  const [lookupState, setLookupState] = React.useState({
+    status: 'idle',
+    compras: [],
+    message: ''
+  });
+  const lookupEnabled = PROGRESS_API_URL && !PROGRESS_API_URL.includes('YOUR_SCRIPT_DEPLOYMENT_ID');
+
+  const handleLookup = async (event) => {
+    event.preventDefault();
+    const phone = whatsapp.trim();
+
+    if (!phone) {
+      setLookupState({
+        status: 'error',
+        compras: [],
+        message: 'Ingresa el WhatsApp que pusiste en el formulario.'
+      });
+      return;
+    }
+
+    if (!lookupEnabled) {
+      setLookupState({
+        status: 'error',
+        compras: [],
+        message: 'La consulta se activa cuando configuras VITE_PROGRESS_API_URL.'
+      });
+      return;
+    }
+
+    setLookupState({ status: 'loading', compras: [], message: '' });
+
+    try {
+      const url = new URL(PROGRESS_API_URL);
+      url.searchParams.set('whatsapp', phone);
+      const response = await fetch(url.toString());
+      if (!response.ok) throw new Error('No se pudo consultar.');
+      const data = await response.json();
+      const compras = Array.isArray(data.compras) ? data.compras : [];
+
+      setLookupState({
+        status: 'success',
+        compras,
+        message: compras.length ? '' : 'Todavia no aparecen boletos para ese WhatsApp.'
+      });
+    } catch (error) {
+      setLookupState({
+        status: 'error',
+        compras: [],
+        message: 'No se pudo consultar ahora. Intenta otra vez en un momento.'
+      });
+    }
+  };
+
+  return (
+    <div className="panel-card p-6 lg:col-span-2">
+      <div className="flex items-center gap-3">
+        <TicketCheck className="h-6 w-6 text-cyan-200" />
+        <h2 className="text-2xl font-black text-white">Consulta tus boletos</h2>
+      </div>
+
+      <form onSubmit={handleLookup} className="mt-5 grid gap-3 md:grid-cols-[1fr_auto]">
+        <label className="sr-only" htmlFor="ticket-whatsapp">WhatsApp usado en el formulario</label>
+        <input
+          id="ticket-whatsapp"
+          className="input"
+          inputMode="tel"
+          type="tel"
+          value={whatsapp}
+          onChange={(event) => setWhatsapp(event.target.value)}
+          placeholder="WhatsApp usado en el formulario"
+        />
+        <button
+          type="submit"
+          disabled={lookupState.status === 'loading'}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-cyan-300 px-5 py-3 font-black uppercase text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:bg-slate-500 disabled:text-slate-200"
+        >
+          {lookupState.status === 'loading' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Search className="h-5 w-5" />}
+          Consultar
+        </button>
+      </form>
+
+      {lookupState.message && (
+        <p className={`mt-4 text-sm font-bold ${lookupState.status === 'error' ? 'text-red-200' : 'text-slate-300'}`}>
+          {lookupState.message}
+        </p>
+      )}
+
+      {lookupState.compras.length > 0 && (
+        <div className="mt-5 grid gap-3">
+          {lookupState.compras.map((compra, index) => (
+            <div key={`${compra.estado}-${index}`} className="rounded-md border border-cyan-300/20 bg-cyan-300/10 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-black text-white">Compra #{index + 1}</p>
+                <span className="rounded-sm bg-yellow-300 px-3 py-1 text-xs font-black uppercase text-slate-950">
+                  {compra.estado || 'pendiente'}
+                </span>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {compra.numeros_boletos.map((ticket) => (
+                  <span key={ticket} className="rounded-md border border-white/15 bg-slate-950/70 px-3 py-2 font-gaming text-sm font-black text-cyan-100">
+                    #{ticket}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function StoryGallery() {
   return (
     <div className="panel-card p-3 sm:p-4">
@@ -314,6 +428,7 @@ function App() {
           </div>
         </div>
         <GoogleFormPurchaseCard vendidos={vendidos} />
+        <TicketLookupCard />
       </section>
 
       <footer className="border-t border-white/10 px-4 py-6 sm:px-5 sm:py-8">

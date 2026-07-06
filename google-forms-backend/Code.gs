@@ -179,10 +179,52 @@ function getProgress() {
   };
 }
 
-function doGet() {
+function doGet(e) {
+  const whatsapp = e && e.parameter ? String(e.parameter.whatsapp || '').trim() : '';
+  const payload = whatsapp ? getTicketsByWhatsapp_(whatsapp) : getProgress();
+
   return ContentService
-    .createTextOutput(JSON.stringify(getProgress()))
+    .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getTicketsByWhatsapp_(whatsapp) {
+  const ss = SpreadsheetApp.getActive();
+  const transactions = getOrCreateSheet_(ss, CONFIG.transactionsSheet);
+  const searchedPhone = normalizePhone_(whatsapp);
+
+  if (!searchedPhone) {
+    return {
+      compras: []
+    };
+  }
+
+  const lastRow = transactions.getLastRow();
+  if (lastRow < 2) {
+    return {
+      compras: []
+    };
+  }
+
+  const rows = transactions
+    .getRange(2, 1, lastRow - 1, 10)
+    .getValues();
+
+  const compras = rows
+    .filter((row) => normalizePhone_(row[4]) === searchedPhone)
+    .map((row) => ({
+      fecha: row[1],
+      cantidad_boletos: Number(row[5]) || 0,
+      estado: String(row[8] || '').trim().toLowerCase(),
+      numeros_boletos: String(row[9] || '')
+        .split(',')
+        .map((ticket) => ticket.trim())
+        .filter(Boolean)
+    }));
+
+  return {
+    compras
+  };
 }
 
 function assignTickets_(ticketsSheet, transactionId, requested) {
@@ -260,6 +302,10 @@ function getValue_(namedValues, key) {
   const value = namedValues[key];
   if (Array.isArray(value)) return String(value[0] || '').trim();
   return String(value || '').trim();
+}
+
+function normalizePhone_(phone) {
+  return String(phone || '').replace(/\D/g, '');
 }
 
 function getOrCreateSheet_(ss, name) {
