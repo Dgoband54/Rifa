@@ -51,6 +51,22 @@ function assertThrows(fn, expectedMessage, message) {
   throw new Error(`${message}\nExpected function to throw.`);
 }
 
+function normalizePhone(phone) {
+  return String(phone || '').replace(/\D/g, '');
+}
+
+function phoneMatches(savedPhone, searchedPhone) {
+  const saved = normalizePhone(savedPhone);
+  const searched = normalizePhone(searchedPhone);
+
+  if (!saved || !searched) return false;
+  if (saved === searched) return true;
+
+  const savedLocal = saved.slice(-9);
+  const searchedLocal = searched.slice(-9);
+  return savedLocal.length === 9 && savedLocal === searchedLocal;
+}
+
 const scenarioOne = assignTickets(
   [
     { numero_boleto: 1, transaction_id: 'old-ok', estado: 'aprobado' },
@@ -85,6 +101,17 @@ assertThrows(
   ),
   'No hay suficientes boletos disponibles.',
   'Bloquea sobreventa cuando ya hay 1000 boletos activos.'
+);
+
+assertDeepEqual(
+  [
+    phoneMatches(969474495, '0969474495'),
+    phoneMatches(969474495, '+593969474495'),
+    phoneMatches('0969474495', '969474495'),
+    phoneMatches('0988888888', '0969474495')
+  ],
+  [true, true, true, false],
+  'Compara WhatsApp aunque Google Sheets quite el cero inicial o se use +593.'
 );
 
 console.log('OK: reciclaje de Google Forms probado localmente.');
