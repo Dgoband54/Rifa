@@ -6,7 +6,7 @@ import './styles.css';
 
 const TOTAL_BOLETOS = 1000;
 const PRECIO_BOLETO = 2;
-const FECHA_SORTEO = new Date('2026-07-18T18:00:00-05:00');
+const FECHA_SORTEO = new Date('2026-07-25T18:00:00-05:00');
 const GOOGLE_FORM_URL = import.meta.env.VITE_GOOGLE_FORM_URL;
 const PROGRESS_API_URL = import.meta.env.VITE_PROGRESS_API_URL;
 
@@ -73,7 +73,7 @@ function ProgressCountdown({ vendidos }) {
             </div>
           ))}
         </div>
-        <p className="mt-3 text-sm text-slate-300">Sabado 18 de julio de 2026, 18:00 hrs.</p>
+        <p className="mt-3 text-sm text-slate-300">Sabado 25 de julio de 2026, 18:00 hrs.</p>
       </div>
     </section>
   );
