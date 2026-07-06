@@ -210,6 +210,9 @@ function TicketLookupCard() {
       const response = await fetch(url.toString());
       if (!response.ok) throw new Error('No se pudo consultar.');
       const data = await response.json();
+      if (!Object.prototype.hasOwnProperty.call(data, 'compras')) {
+        throw new Error('Endpoint sin consulta de boletos.');
+      }
       const compras = Array.isArray(data.compras) ? data.compras : [];
 
       setLookupState({
@@ -221,7 +224,9 @@ function TicketLookupCard() {
       setLookupState({
         status: 'error',
         compras: [],
-        message: 'No se pudo consultar ahora. Intenta otra vez en un momento.'
+        message: error.message === 'Endpoint sin consulta de boletos.'
+          ? 'Falta actualizar el Apps Script publicado para activar esta consulta.'
+          : 'No se pudo consultar ahora. Intenta otra vez en un momento.'
       });
     }
   };

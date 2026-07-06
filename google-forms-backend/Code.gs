@@ -211,7 +211,7 @@ function getTicketsByWhatsapp_(whatsapp) {
     .getValues();
 
   const compras = rows
-    .filter((row) => normalizePhone_(row[4]) === searchedPhone)
+    .filter((row) => phoneMatches_(row[4], searchedPhone))
     .map((row) => ({
       fecha: row[1],
       cantidad_boletos: Number(row[5]) || 0,
@@ -306,6 +306,18 @@ function getValue_(namedValues, key) {
 
 function normalizePhone_(phone) {
   return String(phone || '').replace(/\D/g, '');
+}
+
+function phoneMatches_(savedPhone, searchedPhone) {
+  const saved = normalizePhone_(savedPhone);
+  const searched = normalizePhone_(searchedPhone);
+
+  if (!saved || !searched) return false;
+  if (saved === searched) return true;
+
+  const savedLocal = saved.slice(-9);
+  const searchedLocal = searched.slice(-9);
+  return savedLocal.length === 9 && savedLocal === searchedLocal;
 }
 
 function getOrCreateSheet_(ss, name) {
